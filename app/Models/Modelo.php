@@ -33,4 +33,8 @@ class Modelo extends Model
             'lugares.digits_between' => 'O numero de lugares deve estar entre 1 e 20'
         ];
     }
+
+    public function marca() {
+        return $this->belongsTo('App\Models\Marca');
+    }
 }
