@@ -24,24 +24,32 @@ class MarcaController extends Controller
     public function index(Request $request)
     {
         
-        $marcaRepository = new MarcaRepository($this->marca);
+        $marcas = array();
 
         if($request->has('atributos_modelos')) {
-            $atributos_modelos = 'modelos:id,'.$request->atributos_modelos;
-            $marcaRepository->selectAtributosRegistrosRelacionados($atributos_modelos);
+            $atributos_modelos = $request->atributos_modelos;
+            $marcas = $this->marca->with('modelos:id,'.$atributos_modelos);
         } else {
-            $marcaRepository->selectAtributosRegistrosRelacionados('modelos');
+            $marcas = $this->marca->with('modelos');
         }
 
         if($request->has('filtro')) {
-            $marcaRepository->filtro($request->filtro);
+            $filtros = explode(';', $request->filtro);
+            foreach($filtros as $key => $condicao) {
+                $condicoes = explode(':', $condicao);
+                $marcas = $marcas->where($condicoes[0], $condicoes[1], $condicoes[2]);
+            }
         }
 
         if($request->has('atributos')) {
-            $marcaRepository->selectAtributos($request->atributos);
+            $atributos = $request->atributos;
+            $marcas = $marcas->selectRaw($atributos)->get();
+        } else {
+            $marcas = $marcas->get();
         }
-        
-        return response()->json($marcaRepository->getResultado(), 200);
+
+        $marcas = $this->marca->with('modelos')->get();
+        return response()->json($marcas, 200);
     }
 
     /**
