@@ -140,6 +140,6 @@ class CarroController extends Controller
         }
 
         $carro->delete();
-        return response()->json(['msg' => 'A modelo foi removida com sucesso!'], 200);
+        return response()->json(['msg' => 'O carro foi removida com sucesso!'], 200);
     }
 }
