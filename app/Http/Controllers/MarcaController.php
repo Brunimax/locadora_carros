@@ -7,6 +7,7 @@ use App\Models\Marca;
 use App\Repositories\MarcaRepository;
 use Illuminate\Http\Request;
 
+
 class MarcaController extends Controller
 {
 
