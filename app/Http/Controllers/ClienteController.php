@@ -19,8 +19,27 @@ class ClienteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $clientes = array();
+
+        $clientes = $this->cliente;
+
+        if($request->has('filtro')) {
+            $filtros = explode(';', $request->filtro);
+            foreach($filtros as $key => $condicao) {
+                $condicoes = explode(':', $condicao);
+                $clientes = $clientes->where($condicoes[0], $condicoes[1], $condicoes[2]);
+            }
+        }
+
+        if($request->has('atributos')) {
+            $atributos = $request->atributos;
+            $clientes = $clientes->selectRaw($atributos)->get();
+        } else {
+            $clientes = $clientes->get();
+        }
 
         $clientes = $this->cliente->get();
         return response()->json($clientes, 200);
