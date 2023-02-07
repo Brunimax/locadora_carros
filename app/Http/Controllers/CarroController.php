@@ -23,31 +23,24 @@ class CarroController extends Controller
      */
     public function index(Request $request)
     {
-        $carros = array();
+        $carroRepository = new CarroRepository($this->carro);
 
         if($request->has('atributos_modelo')) {
-            $atributos_modelo = $request->atributos_marca;
-            $carros = $this->carro->with('modelo:id,'.$atributos_modelo);
+            $atributos_modelo = 'modelo:id,'.$request->atributos_modelo;
+            $carroRepository->selectAtributosRegistrosRelacionados($atributos_modelo);
         } else {
-            $carros = $this->carro->with('modelo');
+            $carroRepository->selectAtributosRegistrosRelacionados('modelo');
         }
 
         if($request->has('filtro')) {
-            $filtros = explode(';', $request->filtro);
-            foreach($filtros as $key => $condicao) {
-                $condicoes = explode(':', $condicao);
-                $carros = $carros->where($condicoes[0], $condicoes[1], $condicoes[2]);
-            }
+            $carroRepository->filtro($request->filtro);
         }
 
         if($request->has('atributos')) {
-            $atributos = $request->atributos;
-            $carros = $carros->selectRaw($atributos)->get();
-        } else {
-            $carros = $carros->get();
-        }
+            $carroRepository->selectAtributos($request->atributos);
+        } 
 
-        return response()->json($carros, 200);
+        return response()->json($carroRepository->getResultado(), 200);
     }
 
     /**
