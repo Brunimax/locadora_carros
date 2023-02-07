@@ -23,4 +23,8 @@ class Cliente extends Model
         ];
     }
 
+    public function locacao() {
+        return $this->hasMany('App\Models\Locacao');
+    }
+
 }

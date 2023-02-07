@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Repositories\ClienteRepository;
 use Illuminate\Http\Request;
 
 class ClienteController extends Controller
@@ -22,27 +23,46 @@ class ClienteController extends Controller
     public function index(Request $request)
     {
 
-        $clientes = array();
+        $clienteRepository = new ClienteRepository($this->cliente);
 
-        $clientes = $this->cliente;
+        if($request->has('atributos_locacao')) {
+            $atributos_locacao = 'locacao:id,'.$request->atributos_locacao;
+            $clienteRepository->selectAtributosRegistrosRelacionados($atributos_locacao);
+        } else {
+            $clienteRepository->selectAtributosRegistrosRelacionados('locacao');
+        }
 
         if($request->has('filtro')) {
-            $filtros = explode(';', $request->filtro);
-            foreach($filtros as $key => $condicao) {
-                $condicoes = explode(':', $condicao);
-                $clientes = $clientes->where($condicoes[0], $condicoes[1], $condicoes[2]);
-            }
+            $clienteRepository->filtro($request->filtro);
         }
 
         if($request->has('atributos')) {
-            $atributos = $request->atributos;
-            $clientes = $clientes->selectRaw($atributos)->get();
-        } else {
-            $clientes = $clientes->get();
-        }
+            $clienteRepository->selectAtributos($request->atributos);
+        } 
 
-        $clientes = $this->cliente->get();
-        return response()->json($clientes, 200);
+        return response()->json($clienteRepository->getResultado(), 200);
+
+        // $clientes = array();
+
+        // $clientes = $this->cliente;
+
+        // if($request->has('filtro')) {
+        //     $filtros = explode(';', $request->filtro);
+        //     foreach($filtros as $key => $condicao) {
+        //         $condicoes = explode(':', $condicao);
+        //         $clientes = $clientes->where($condicoes[0], $condicoes[1], $condicoes[2]);
+        //     }
+        // }
+
+        // if($request->has('atributos')) {
+        //     $atributos = $request->atributos;
+        //     $clientes = $clientes->selectRaw($atributos)->get();
+        // } else {
+        //     $clientes = $clientes->get();
+        // }
+
+        // $clientes = $this->cliente->get();
+        // return response()->json($clientes, 200);
         
     }
 
