@@ -8,7 +8,7 @@ abstract class AbstractRepository {
     
     protected $model;
 
-    public function __construct($model) {
+    public function __construct(Model $model) {
         $this->model = $model;
     }
 
