@@ -58,7 +58,7 @@ class LocacaoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate($this->locacao->rules());
+        $request->validate($this->locacao->rules(), $this->locacao->feedback());
 
         $locacao = $this->locacao->create([
             'cliente_id' => $request->cliente_id,

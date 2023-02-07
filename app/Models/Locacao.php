@@ -21,7 +21,24 @@ class Locacao extends Model
     ];
 
     public function rules() {
-        return [];
+        return [
+            'cliente_id' => 'exists:clientes,id', 
+            'carro_id' => 'exists:carros,id', 
+            'data_inicio_periodo' => 'required', 
+            'data_final_previsto_periodo' => 'required',
+            'data_final_realizado_periodo' => 'required', 
+            'valor_diario' => 'required', 
+            'km_inicial' => 'required',
+            'km_final' => 'required',
+        ];
+    }
+
+    public function feedback() {
+        return [
+            'cliente_id.exists' => 'O cliente não existe no nosso sistema',
+            'carro_id.exists' => 'O carro não existe no nosso sistema',
+            'required' => 'Campo obrigatorio'
+        ];
     }
 
     public function cliente() {
