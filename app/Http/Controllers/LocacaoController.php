@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Locacao;
+use App\Repositories\LocacaoRepository;
 use Illuminate\Http\Request;
 
 class LocacaoController extends Controller
@@ -21,27 +22,32 @@ class LocacaoController extends Controller
      */
     public function index(Request $request)
     {
-        $locacoes = array();
 
-        $locacoes = $this->locacao;
+        $locacaoRepository = new LocacaoRepository($this->locacao);
+
+        if($request->has('atributos_cliente')) {
+            $atributos_cliente = 'cliente:id,'.$request->atributos_cliente;
+            $locacaoRepository->selectAtributosRegistrosRelacionados($atributos_cliente);
+        } else {
+            $locacaoRepository->selectAtributosRegistrosRelacionados('cliente');
+        }
+
+        if($request->has('atributos_carro')) {
+            $atributos_carro = 'carro:id,'.$request->atributos_carro;
+            $locacaoRepository->selectAtributosRegistrosRelacionados($atributos_carro);
+        } else {
+            $locacaoRepository->selectAtributosRegistrosRelacionados('carro');
+        }
 
         if($request->has('filtro')) {
-            $filtros = explode(';', $request->filtro);
-            foreach($filtros as $key => $condicao) {
-                $condicoes = explode(':', $condicao);
-                $locacoes = $locacoes->where($condicoes[0], $condicoes[1], $condicoes[2]);
-            }
+            $locacaoRepository->filtro($request->filtro);
         }
 
         if($request->has('atributos')) {
-            $atributos = $request->atributos;
-            $locacoes = $locacoes->selectRaw($atributos)->get();
-        } else {
-            $locacoes = $locacoes->get();
-        }
+            $locacaoRepository->selectAtributos($request->atributos);
+        } 
 
-        $locacoes = $this->locacao->get();
-        return response()->json($locacoes, 200);
+        return response()->json($locacaoRepository->getResultado(), 200);
     }
 
     /**
