@@ -81,7 +81,7 @@ class LocacaoController extends Controller
      */
     public function show($id)
     {
-        $locacao = $this->locacao->find($id);
+        $locacao = $this->locacao->with('cliente', 'carro')->find($id);
 
         if($locacao === null) {
             return response()->json(['erro' => 'Recurso pesquisado não existe'], 404);
