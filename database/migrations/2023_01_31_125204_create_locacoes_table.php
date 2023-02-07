@@ -20,6 +20,9 @@ class CreateLocacoesTable extends Migration
             $table->dateTime('data_inicio_periodo');
             $table->dateTime('data_final_previsto_periodo');
             $table->dateTime('data_final_realizado_periodo');
+            $table->unsignedBigInteger('valor_diario');
+            $table->unsignedBigInteger('km_inicial');
+            $table->unsignedBigInteger('km_final');
             $table->timestamps();
 
             $table->foreign('cliente_id')->references('id')->on('clientes');
